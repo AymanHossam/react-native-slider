@@ -292,6 +292,22 @@ const MyStepMarker: FC<MarkerProps> = ({stepMarked, currentValue}) => {
   );
 };
 
+const CustomComponent: FC<MarkerProps> = ({stepMarked, currentValue, index, max}) => {
+  if (stepMarked) {
+    return (
+      <View style={styles.customComponentFrame}>
+        <View style={[styles.customComponentLeftFrame, styles.filled]}>
+          <Text style={styles.trackText}>{index}</Text>
+        </View>
+        <View style={[styles.customComponentRightFrame, styles.empty]}>
+          <Text style={styles.trackText}>{max}</Text>
+        </View>
+        <Text style={[styles.trackText, {position: "absolute", left: 18}]}>/</Text>
+      </View>);
+  }
+  return currentValue > index ? ( <View style={[styles.trackDot, styles.filled]}></View>) : (<View style={[styles.trackDot, styles.empty]}></View>);
+};
+
 const SliderExampleWithCustomMarker = (props: SliderProps) => {
   const [value, setValue] = useState(props.value ?? CONSTANTS.MIN_VALUE);
 
@@ -317,6 +333,30 @@ const SliderExampleWithCustomMarker = (props: SliderProps) => {
   );
 };
 
+const SliderExampleWithCustomComponentAndFilledSteps = (props: SliderProps) => {
+  const [value, setValue] = useState(props.value || 50);
+
+  return (
+    <View style={{alignItems: 'center'}}>
+      <Text style={styles.text}>{value && +value.toFixed(3)}</Text>
+      <Slider
+        step={CONSTANTS.STEP}
+        style={[styles.slider, props.style]}
+        minimumValue={CONSTANTS.MIN_VALUE}
+        maximumValue={CONSTANTS.MAX_VALUE}
+        thumbImage={require('./resources/empty.png')}
+        tapToSeek
+        {...props}
+        value={value}
+        onValueChange={setValue}
+        StepMarker={CustomComponent}
+        minimumTrackTintColor={'#00629A'}
+        maximumTrackTintColor={'#979EA4'}
+      />
+    </View>
+  )
+}
+
 export default SliderExample;
 
 const styles = StyleSheet.create({
@@ -325,6 +365,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
     margin: 0,
+  },
+  trackText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    justifyContent: "center",
+    alignSelf: "center",
+    top: 12
+  },
+  trackDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 10,
+    top: 4,
+  },
+  empty: {
+    backgroundColor: '#B3BFC9',
+  },
+  filled: {
+    backgroundColor: '#00629A',
+  },
+  customComponentFrame: {
+    flex: 1,
+    flexDirection: 'row',
+    top: -10,
+    opacity: 0.95
+  },
+  customComponentLeftFrame: {
+    height: 40,
+    width: 20,
+    borderTopLeftRadius: 40,
+    borderBottomLeftRadius: 40,
+  },
+  customComponentRightFrame: {
+    height: 40,
+    width: 20,
+    borderTopRightRadius: 40,
+    borderBottomRightRadius: 40,
   },
   divider: {
     width: 2,
@@ -606,6 +683,12 @@ export const examples: Props[] = [
     title: 'Custom step marker settings',
     render() {
       return <SliderExampleWithCustomMarker />;
+    },
+  },
+  {
+    title: 'Custom component with steps filled when passed',
+    render() {
+      return <SliderExampleWithCustomComponentAndFilledSteps />;
     },
   },
   {
